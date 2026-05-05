@@ -1,2 +1,2 @@
-// TODO: for Auth DTOs
-export {};
+export { RegisterDto } from './register.dto';
+export { LoginDto } from './login.dto';

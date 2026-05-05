@@ -1,2 +1,1 @@
-// TODO: for Auth Strategies
-export {};
+export { JwtStrategy } from './jwt.strategy';
