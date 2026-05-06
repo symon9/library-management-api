@@ -1,20 +1,36 @@
-FROM node:18-alpine AS builder
+# Stage 1: builder
+FROM node:20-alpine AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
-RUN npm install
 
+# Install all dependencies
+RUN npm ci
+
+# Copy source code and config files
 COPY . .
+
+# Build the application
 RUN npm run build
 
-FROM node:18-alpine
+# Stage 2: production
+FROM node:20-alpine AS production
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
-RUN npm install --only=production
 
-COPY --from=builder /usr/src/app/dist ./dist
+# Install only production dependencies
+RUN npm ci --only=production
 
+# Copy compiled output from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Expose port
+EXPOSE 3000
+
+# Start command
 CMD ["node", "dist/main"]

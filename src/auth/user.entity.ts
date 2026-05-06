@@ -34,8 +34,8 @@ export class User {
   })
   role: UserRole;
 
-  @Column({ select: false, nullable: true })
-  refreshTokenHash: string;
+  @Column({ type: 'varchar', select: false, nullable: true })
+  refreshTokenHash: string | null;
 
   @Column({ default: true })
   isActive: boolean;
