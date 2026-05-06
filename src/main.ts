@@ -1,37 +1,32 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+//import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+//import { ConfigService } from '@nestjs/config';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 3000;
+  const reflector = app.get(Reflector);
+
+  // JWT must run before Roles  —Order matters here
+  // JWT verifies the token and attaches user to request
+  // Roles then checks request.user.role
 
   // Global ValidationPipe
+  app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
+
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
+      whitelist: true, // strips fields not in the DTO
+      forbidNonWhitelisted: true, // throws error if unknown fields are sent
+      transform: true, // auto-converts strings to numbers
     }),
   );
 
-  // Swagger setup
-  if (process.env.NODE_ENV !== 'production') {
-    const config = new DocumentBuilder()
-      .setTitle('Library API')
-      .setDescription('The Library Management API description')
-      .setVersion('1.0')
-      .addBearerAuth()
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
-  }
-
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+  await app.listen(process.env.PORT || 3000);
+  console.log(`Application is running on: http://localhost:3000`);
 }
 
 bootstrap().catch((err) => {

@@ -1,32 +1,49 @@
-import { Controller, Get, Post, Patch, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { MembersService } from './members.service';
+import { CreateMemberDto } from './dto/create-member.dto';
+import { UpdateMemberDto } from './dto/update-member.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
   @Get()
-  findAll(): string {
+  @Roles('admin', 'librarian')
+  findAll() {
     return this.membersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): string {
-    return this.membersService.findOne(+id);
+  @Roles('admin', 'librarian')
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.membersService.findOne(id);
   }
 
   @Post()
-  create(): string {
-    return this.membersService.create();
+  @Roles('admin', 'librarian')
+  create(@Body() dto: CreateMemberDto) {
+    return this.membersService.create(dto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string): string {
-    return this.membersService.update(+id);
+  @Roles('admin', 'librarian')
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateMemberDto) {
+    return this.membersService.update(id, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string): string {
-    return this.membersService.remove(+id);
+  // Separate route for deactivation — no hard deletes
+  @Patch(':id/deactivate')
+  @Roles('admin')
+  deactivate(@Param('id', ParseUUIDPipe) id: string) {
+    return this.membersService.deactivate(id);
   }
 }

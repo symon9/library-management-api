@@ -7,6 +7,10 @@ import { BooksModule } from './books/books.module';
 import { MembersModule } from './members/members.module';
 import { BorrowsModule } from './borrows/borrows.module';
 import { AppController } from './app.controller';
+/*import { Book } from './books/book.entity';
+import { Member } from './members/member.entity';
+import { Borrow } from './borrows/borrow.entity';
+import { User } from './auth/user.entity';*/
 
 @Module({
   imports: [
