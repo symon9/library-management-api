@@ -16,6 +16,7 @@ interface JwtUser {
   email: string;
   role: string;
 }
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -52,6 +53,5 @@ export class AuthController {
       message: 'User profile retrieved successfully.',
       user,
     };
-
   }
 }

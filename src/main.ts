@@ -18,14 +18,26 @@ async function bootstrap() {
   // Global ValidationPipe
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // strips fields not in the DTO
-      forbidNonWhitelisted: true, // throws error if unknown fields are sent
-      transform: true, // auto-converts strings to numbers
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
     }),
   );
 
-  await app.listen(process.env.PORT || 3000);
-  console.log(`Application is running on: http://localhost:3000`);
+  // Swagger setup
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Library API')
+      .setDescription('The Library Management API description')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
+
+  await app.listen(port);
+  console.log(`Application is running on: http://localhost:${port}`);
 }
 
 bootstrap().catch((err) => {
