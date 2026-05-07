@@ -61,9 +61,18 @@ export class MembersController {
     return this.membersService.update(id, dto);
   }
 
+  @Patch(':id/deactivate')
+  @Roles('admin', 'librarian')
+  @ApiOperation({ summary: 'Deactivate a member' })
+  @ApiResponse({ status: 200, description: 'Member successfully deactivated.' })
+  @ApiResponse({ status: 404, description: 'Member not found.' })
+  deactivate(@Param('id', ParseIntPipe) id: number) {
+    return this.membersService.deactivate(id);
+  }
+
   @Delete(':id')
   @Roles('admin')
-  @ApiOperation({ summary: 'Deactivate a member' })
+  @ApiOperation({ summary: 'Delete a member (Soft Delete)' })
   @ApiResponse({ status: 200, description: 'Member successfully deactivated.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
   remove(@Param('id', ParseIntPipe) id: number) {
