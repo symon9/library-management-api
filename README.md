@@ -48,11 +48,14 @@ A production-ready, feature-rich RESTful API built for a Library Management Syst
 The easiest way to get the entire stack (API + DB + pgAdmin) running.
 
 ```bash
-# Clone the repository
+# 1. Clone the repository (Replace <repo-url> with your project link)
 git clone <your-repo-url>
-cd library-management-api
+cd capstone_project
 
-# Start everything
+# 2. Create an environment file from the example
+cp .env.example .env
+
+# 3. Start the infrastructure in the background
 docker compose up --build -d
 ```
 - **API**: `http://localhost:3000`
