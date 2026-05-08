@@ -3,9 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
-import { BooksModule } from './books/books.module';
-import { MembersModule } from './members/members.module';
-import { BorrowsModule } from './borrows/borrows.module';
+import { BooksModule } from './books';
+import { MembersModule } from './members';
+import { BorrowsModule } from './borrows';
 import { AppController } from './app.controller';
 import { JwtAuthGuard, RolesGuard } from './auth/guards';
 

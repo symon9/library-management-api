@@ -1,2 +1,2 @@
-// TODO: for Books DTOs
-export {};
+export * from './create-book.dto';
+export * from './update-book.dto';

@@ -6,47 +6,63 @@ import {
   Delete,
   Body,
   Param,
-  ParseUUIDPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { CreateBookDto, UpdateBookDto } from './dto';
+import { Roles } from '../auth/decorators';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
+@ApiTags('Books')
+@ApiBearerAuth()
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
-  //logged-in user can view books
   @Get()
+  @ApiOperation({ summary: 'Get all books' })
+  @ApiResponse({ status: 200, description: 'List of all books.' })
   findAll() {
     return this.booksService.findAll();
   }
 
-  //ParseUUIDPipe validates that :id is a real UUID format; if not throws error
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  @ApiOperation({ summary: 'Get a specific book by ID' })
+  @ApiResponse({ status: 200, description: 'Book retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'Book not found.' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.booksService.findOne(id);
   }
 
-  //Only admins and librarians are allowed to add books
   @Post()
   @Roles('admin', 'librarian')
+  @ApiOperation({ summary: 'Create a new book' })
+  @ApiResponse({ status: 201, description: 'Book successfully created.' })
+  @ApiResponse({ status: 409, description: 'Book with ISBN already exists.' })
   create(@Body() dto: CreateBookDto) {
     return this.booksService.create(dto);
   }
 
-  //Only admins and librarians can edit books
   @Patch(':id')
   @Roles('admin', 'librarian')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateBookDto) {
+  @ApiOperation({ summary: 'Update a book' })
+  @ApiResponse({ status: 200, description: 'Book successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Book not found.' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateBookDto) {
     return this.booksService.update(id, dto);
   }
 
-  //Only Admins can delete books
   @Delete(':id')
   @Roles('admin')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
+  @ApiOperation({ summary: 'Delete a book' })
+  @ApiResponse({ status: 200, description: 'Book successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Book not found.' })
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.booksService.remove(id);
   }
 }

@@ -3,47 +3,79 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Body,
   Param,
-  ParseUUIDPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
-import { CreateMemberDto } from './dto/create-member.dto';
-import { UpdateMemberDto } from './dto/update-member.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { CreateMemberDto, UpdateMemberDto } from './dto';
+import { Roles } from '../auth/decorators';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
+@ApiTags('Members')
+@ApiBearerAuth()
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
   @Get()
   @Roles('admin', 'librarian')
+  @ApiOperation({ summary: 'Get all members' })
+  @ApiResponse({ status: 200, description: 'List of all members.' })
   findAll() {
     return this.membersService.findAll();
   }
 
   @Get(':id')
-  @Roles('admin', 'librarian')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  @ApiOperation({ summary: 'Get a specific member by ID' })
+  @ApiResponse({ status: 200, description: 'Member retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'Member not found.' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.membersService.findOne(id);
   }
 
   @Post()
   @Roles('admin', 'librarian')
+  @ApiOperation({ summary: 'Create a new member' })
+  @ApiResponse({ status: 201, description: 'Member successfully created.' })
+  @ApiResponse({
+    status: 409,
+    description: 'Member with email already exists.',
+  })
   create(@Body() dto: CreateMemberDto) {
     return this.membersService.create(dto);
   }
 
   @Patch(':id')
   @Roles('admin', 'librarian')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateMemberDto) {
+  @ApiOperation({ summary: 'Update a member' })
+  @ApiResponse({ status: 200, description: 'Member successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Member not found.' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateMemberDto) {
     return this.membersService.update(id, dto);
   }
 
-  // Separate route for deactivation — no hard deletes
   @Patch(':id/deactivate')
+  @Roles('admin', 'librarian')
+  @ApiOperation({ summary: 'Deactivate a member' })
+  @ApiResponse({ status: 200, description: 'Member successfully deactivated.' })
+  @ApiResponse({ status: 404, description: 'Member not found.' })
+  deactivate(@Param('id', ParseIntPipe) id: number) {
+    return this.membersService.deactivate(id);
+  }
+
+  @Delete(':id')
   @Roles('admin')
-  deactivate(@Param('id', ParseUUIDPipe) id: string) {
+  @ApiOperation({ summary: 'Delete a member (Soft Delete)' })
+  @ApiResponse({ status: 200, description: 'Member successfully deactivated.' })
+  @ApiResponse({ status: 404, description: 'Member not found.' })
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.membersService.deactivate(id);
   }
 }

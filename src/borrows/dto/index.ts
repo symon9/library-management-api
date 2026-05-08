@@ -1,2 +1,1 @@
-// TODO: for Borrows DTOs
-export {};
+export * from './create-borrow.dto';

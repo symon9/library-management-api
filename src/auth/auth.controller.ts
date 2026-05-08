@@ -9,6 +9,12 @@ import {
 import { AuthService, AuthResponse } from './auth.service';
 import { RegisterDto, LoginDto } from './dto';
 import { Public, CurrentUser } from './decorators';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 interface JwtUser {
   id: number;
@@ -17,12 +23,16 @@ interface JwtUser {
   role: string;
 }
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('register')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiResponse({ status: 201, description: 'User successfully registered.' })
+  @ApiResponse({ status: 409, description: 'Email already in use.' })
   register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
     return this.authService.register(registerDto);
   }
@@ -30,12 +40,18 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Log in a user' })
+  @ApiResponse({ status: 200, description: 'User successfully logged in.' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials.' })
   login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
     return this.authService.login(loginDto);
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Log out a user' })
+  @ApiResponse({ status: 200, description: 'User successfully logged out.' })
   logout(
     @CurrentUser() user: JwtUser,
   ): Promise<{ status: string; message: string }> {
@@ -43,6 +59,9 @@ export class AuthController {
   }
 
   @Get('me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiResponse({ status: 200, description: 'Profile retrieved successfully.' })
   getMe(@CurrentUser() user: JwtUser): {
     status: string;
     message: string;

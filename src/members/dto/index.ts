@@ -1,2 +1,2 @@
-// TODO: for Members DTOs
-export {};
+export * from './create-member.dto';
+export * from './update-member.dto';

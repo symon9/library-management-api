@@ -1,24 +1,17 @@
-import {
-  IsString,
-  IsEmail,
-  IsOptional,
-  IsEnum,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsOptional } from 'class-validator';
+import { MembershipType } from '../member.entity';
 
 export class CreateMemberDto {
   @IsString()
-  @IsNotEmpty()
   name: string;
 
   @IsEmail()
   email: string;
 
   @IsString()
-  @IsOptional() // phone is not neccessary (optional)
-  phone?: string;
+  phone: string;
 
-  @IsEnum(['basic', 'premium'])
-  @IsOptional() // this defaults to 'basic' if not provided
-  membershipType?: 'basic' | 'premium';
+  @IsEnum(MembershipType)
+  @IsOptional()
+  membershipType?: MembershipType;
 }
