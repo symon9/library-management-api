@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
 interface JwtUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: string;

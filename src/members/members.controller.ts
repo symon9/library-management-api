@@ -6,7 +6,7 @@ import {
   Delete,
   Body,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto, UpdateMemberDto } from './dto';
@@ -36,7 +36,7 @@ export class MembersController {
   @ApiOperation({ summary: 'Get a specific member by ID' })
   @ApiResponse({ status: 200, description: 'Member retrieved successfully.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.membersService.findOne(id);
   }
 
@@ -57,7 +57,7 @@ export class MembersController {
   @ApiOperation({ summary: 'Update a member' })
   @ApiResponse({ status: 200, description: 'Member successfully updated.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateMemberDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateMemberDto) {
     return this.membersService.update(id, dto);
   }
 
@@ -66,7 +66,7 @@ export class MembersController {
   @ApiOperation({ summary: 'Deactivate a member' })
   @ApiResponse({ status: 200, description: 'Member successfully deactivated.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
-  deactivate(@Param('id', ParseIntPipe) id: number) {
+  deactivate(@Param('id', ParseUUIDPipe) id: string) {
     return this.membersService.deactivate(id);
   }
 
@@ -75,7 +75,7 @@ export class MembersController {
   @ApiOperation({ summary: 'Delete a member (Soft Delete)' })
   @ApiResponse({ status: 200, description: 'Member successfully deactivated.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.membersService.deactivate(id);
   }
 }

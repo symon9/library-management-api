@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 
 interface JwtUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: string;

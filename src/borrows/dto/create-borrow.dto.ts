@@ -1,9 +1,9 @@
-import { IsNumber } from 'class-validator';
+import { IsUUID } from 'class-validator';
 
 export class CreateBorrowDto {
-  @IsNumber()
-  memberId: number;
+  @IsUUID()
+  memberId: string;
 
-  @IsNumber()
-  bookId: number;
+  @IsUUID()
+  bookId: string;
 }
