@@ -6,12 +6,7 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  LIBRARIAN = 'librarian',
-  MEMBER = 'member',
-}
+import { UserRole } from './user-role.enum';
 
 @Entity()
 export class User {

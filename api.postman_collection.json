@@ -68,6 +68,9 @@
 									"if (jsonData.accessToken) {",
 									"    pm.collectionVariables.set(\"access_token\", jsonData.accessToken);",
 									"}",
+									"if (jsonData.refreshToken) {",
+									"    pm.collectionVariables.set(\"refresh_token\", jsonData.refreshToken);",
+									"}",
 									"pm.test(\"Login success\", () => pm.response.to.have.status(200));"
 								],
 								"type": "text/javascript"
@@ -170,6 +173,51 @@
 							"path": [
 								"auth",
 								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"access_token\", jsonData.accessToken);",
+									"}",
+									"if (jsonData.refreshToken) {",
+									"    pm.collectionVariables.set(\"refresh_token\", jsonData.refreshToken);",
+									"}",
+									"pm.test(\"Refresh successful\", () => pm.response.to.have.status(200));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
 							]
 						}
 					},
@@ -634,6 +682,10 @@
 		},
 		{
 			"key": "last_borrow_id",
+			"value": ""
+		},
+		{
+			"key": "refresh_token",
 			"value": ""
 		},
 		{

@@ -7,7 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { AuthService, AuthResponse } from './auth.service';
-import { RegisterDto, LoginDto } from './dto';
+import { RegisterDto, LoginDto, RefreshDto } from './dto';
 import { Public, CurrentUser } from './decorators';
 import {
   ApiTags,
@@ -45,6 +45,21 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials.' })
   login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
     return this.authService.login(loginDto);
+  }
+
+  @Public()
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiResponse({
+    status: 200,
+    description: 'New access and refresh tokens issued.',
+  })
+  @ApiResponse({ status: 401, description: 'Invalid refresh token.' })
+  refresh(
+    @Body() refreshDto: RefreshDto,
+  ): Promise<{ status: string; accessToken: string; refreshToken: string }> {
+    return this.authService.refreshTokens(refreshDto.refreshToken);
   }
 
   @Post('logout')

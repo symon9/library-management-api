@@ -28,7 +28,9 @@ async function bootstrap() {
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('Library API')
-      .setDescription('The Library Management API description')
+      .setDescription(
+        'REST API for managing library books, members, borrowing records, and authentication.',
+      )
       .setVersion('1.0')
       .addBearerAuth()
       .build();

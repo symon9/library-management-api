@@ -9,12 +9,20 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { User, UserRole } from './user.entity';
+import { createHash, randomUUID } from 'crypto';
+import { User } from './user.entity';
+import { UserRole } from './user-role.enum';
 import { RegisterDto, LoginDto } from './dto';
 
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+}
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: string;
 }
 
 export interface AuthResponse {
@@ -28,7 +36,6 @@ export interface AuthResponse {
   };
   accessToken: string;
   refreshToken: string;
-  tokens: AuthTokens;
 }
 
 @Injectable()
@@ -73,7 +80,6 @@ export class AuthService {
       },
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      tokens,
     };
   }
 
@@ -127,7 +133,6 @@ export class AuthService {
       },
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      tokens,
     };
   }
 
@@ -138,6 +143,47 @@ export class AuthService {
     }
     user.role = role;
     return this.userRepository.save(user);
+  }
+
+  async refreshTokens(
+    refreshToken: string,
+  ): Promise<{ status: string; accessToken: string; refreshToken: string }> {
+    try {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(
+        refreshToken,
+        {
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        },
+      );
+
+      const user = await this.userRepository.findOne({
+        where: { id: payload.sub },
+        select: ['id', 'email', 'role', 'refreshTokenHash'],
+      });
+
+      if (!user || !user.refreshTokenHash) {
+        throw new UnauthorizedException('Access Denied');
+      }
+
+      const refreshMatches = await bcrypt.compare(
+        this.digestRefreshToken(refreshToken),
+        user.refreshTokenHash,
+      );
+
+      if (!refreshMatches) {
+        throw new UnauthorizedException('Access Denied');
+      }
+
+      const tokens = await this.generateAndPersistTokens(user);
+
+      return {
+        status: 'success',
+        ...tokens,
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
+      throw new UnauthorizedException('Access Denied');
+    }
   }
 
   async logout(userId: number): Promise<{ status: string; message: string }> {
@@ -161,8 +207,12 @@ export class AuthService {
   async generateAndPersistTokens(user: User): Promise<AuthTokens> {
     const tokens = await this.generateTokens(user);
 
-    // Store hashed refresh token
-    const hashedRefresh = await bcrypt.hash(tokens.refreshToken, 10);
+    // Bcrypt truncates inputs after 72 bytes, so digest JWTs before hashing.
+    const hashedRefresh = await bcrypt.hash(
+      this.digestRefreshToken(tokens.refreshToken),
+      10,
+    );
+    // Update the hash in the database
     await this.userRepository.update(user.id, {
       refreshTokenHash: hashedRefresh,
     });
@@ -171,7 +221,12 @@ export class AuthService {
   }
 
   async generateTokens(user: User): Promise<AuthTokens> {
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      jti: randomUUID(),
+    };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
@@ -185,5 +240,9 @@ export class AuthService {
     ]);
 
     return { accessToken, refreshToken };
+  }
+
+  private digestRefreshToken(refreshToken: string): string {
+    return createHash('sha256').update(refreshToken).digest('hex');
   }
 }
