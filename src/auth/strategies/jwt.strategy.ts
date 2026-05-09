@@ -7,7 +7,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from '../user.entity';
 
 interface JwtPayload {
-  sub: number;
+  sub: string;
   email: string;
   role: string;
 }

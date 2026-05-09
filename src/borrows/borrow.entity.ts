@@ -17,22 +17,22 @@ export enum BorrowStatus {
 
 @Entity()
 export class Borrow {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Member)
   @JoinColumn({ name: 'memberId' })
   member: Member;
 
-  @Column()
-  memberId: number;
+  @Column({ type: 'uuid' })
+  memberId: string;
 
   @ManyToOne(() => Book)
   @JoinColumn({ name: 'bookId' })
   book: Book;
 
-  @Column()
-  bookId: number;
+  @Column({ type: 'uuid' })
+  bookId: string;
 
   @CreateDateColumn()
   borrowDate: Date;

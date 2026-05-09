@@ -532,7 +532,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"bookId\": {{last_book_id}},\n    \"memberId\": {{last_member_id}}\n}",
+							"raw": "{\n    \"bookId\": \"{{last_book_id}}\",\n    \"memberId\": \"{{last_member_id}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -674,7 +674,7 @@
 		},
 		{
 			"key": "last_book_id",
-			"value": "1"
+			"value": ""
 		},
 		{
 			"key": "last_member_id",

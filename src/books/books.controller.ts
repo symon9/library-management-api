@@ -6,7 +6,7 @@ import {
   Delete,
   Body,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto, UpdateBookDto } from './dto';
@@ -35,7 +35,7 @@ export class BooksController {
   @ApiOperation({ summary: 'Get a specific book by ID' })
   @ApiResponse({ status: 200, description: 'Book retrieved successfully.' })
   @ApiResponse({ status: 404, description: 'Book not found.' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.booksService.findOne(id);
   }
 
@@ -53,7 +53,7 @@ export class BooksController {
   @ApiOperation({ summary: 'Update a book' })
   @ApiResponse({ status: 200, description: 'Book successfully updated.' })
   @ApiResponse({ status: 404, description: 'Book not found.' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateBookDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateBookDto) {
     return this.booksService.update(id, dto);
   }
 
@@ -62,7 +62,7 @@ export class BooksController {
   @ApiOperation({ summary: 'Delete a book' })
   @ApiResponse({ status: 200, description: 'Book successfully deleted.' })
   @ApiResponse({ status: 404, description: 'Book not found.' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.booksService.remove(id);
   }
 }

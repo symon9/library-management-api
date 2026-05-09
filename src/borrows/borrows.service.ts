@@ -84,7 +84,7 @@ export class BorrowsService {
     return this.borrowRepo.save(borrow);
   }
 
-  async returnBook(id: number): Promise<Borrow> {
+  async returnBook(id: string): Promise<Borrow> {
     const borrow = await this.borrowRepo.findOne({
       where: { id },
       relations: ['book'],

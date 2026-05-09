@@ -20,7 +20,7 @@ export interface AuthTokens {
 }
 
 interface JwtPayload {
-  sub: number;
+  sub: string;
   email: string;
   role: string;
 }
@@ -29,7 +29,7 @@ export interface AuthResponse {
   status: string;
   message: string;
   user: {
-    id: number;
+    id: string;
     name: string;
     email: string;
     role: string;
@@ -136,7 +136,7 @@ export class AuthService {
     };
   }
 
-  async updateRole(id: number, role: UserRole): Promise<User> {
+  async updateRole(id: string, role: UserRole): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
@@ -186,7 +186,7 @@ export class AuthService {
     }
   }
 
-  async logout(userId: number): Promise<{ status: string; message: string }> {
+  async logout(userId: string): Promise<{ status: string; message: string }> {
     if (!userId) {
       throw new UnauthorizedException(
         'Logout failed: Invalid session context.',

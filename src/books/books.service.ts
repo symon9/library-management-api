@@ -19,7 +19,7 @@ export class BooksService {
     return this.bookRepo.find();
   }
 
-  async findOne(id: number): Promise<Book> {
+  async findOne(id: string): Promise<Book> {
     const book = await this.bookRepo.findOne({ where: { id } });
     if (!book) {
       throw new NotFoundException(`Book with ID "${id}" not found`);
@@ -48,7 +48,7 @@ export class BooksService {
     return this.bookRepo.save(book);
   }
 
-  async update(id: number, dto: UpdateBookDto): Promise<Book> {
+  async update(id: string, dto: UpdateBookDto): Promise<Book> {
     const book = await this.findOne(id);
 
     if (dto.totalQuantity !== undefined) {
@@ -60,7 +60,7 @@ export class BooksService {
     return this.findOne(id);
   }
 
-  async remove(id: number): Promise<{ message: string }> {
+  async remove(id: string): Promise<{ message: string }> {
     const book = await this.findOne(id);
     await this.bookRepo.remove(book);
     return { message: `Book "${book.title}" has been deleted` };

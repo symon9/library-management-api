@@ -2,7 +2,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
 
 interface JwtUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: string;

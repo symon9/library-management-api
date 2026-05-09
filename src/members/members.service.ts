@@ -19,7 +19,7 @@ export class MembersService {
     return this.memberRepo.find();
   }
 
-  async findOne(id: number): Promise<Member> {
+  async findOne(id: string): Promise<Member> {
     const member = await this.memberRepo.findOne({ where: { id } });
     if (!member) {
       throw new NotFoundException(`Member with ID "${id}" not found`);
@@ -42,13 +42,13 @@ export class MembersService {
     return this.memberRepo.save(member);
   }
 
-  async update(id: number, dto: UpdateMemberDto): Promise<Member> {
+  async update(id: string, dto: UpdateMemberDto): Promise<Member> {
     await this.findOne(id);
     await this.memberRepo.update(id, dto);
     return this.findOne(id);
   }
 
-  async deactivate(id: number): Promise<{ message: string }> {
+  async deactivate(id: string): Promise<{ message: string }> {
     const member = await this.findOne(id);
     member.isActive = false;
     await this.memberRepo.save(member);

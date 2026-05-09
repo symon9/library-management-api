@@ -5,7 +5,7 @@ import {
   Patch,
   Body,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { BorrowsService } from './borrows.service';
 import { CreateBorrowDto } from './dto';
@@ -56,7 +56,7 @@ export class BorrowsController {
   @ApiResponse({ status: 200, description: 'Book successfully returned.' })
   @ApiResponse({ status: 400, description: 'Book is already returned.' })
   @ApiResponse({ status: 404, description: 'Borrow record not found.' })
-  returnBook(@Param('id', ParseIntPipe) id: number) {
+  returnBook(@Param('id', ParseUUIDPipe) id: string) {
     return this.borrowsService.returnBook(id);
   }
 }

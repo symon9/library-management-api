@@ -13,8 +13,8 @@ export enum MembershipType {
 
 @Entity()
 export class Member {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
